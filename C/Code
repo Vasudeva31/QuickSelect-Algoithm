@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+int partition(int array[], int low, int high)
+ {
+    int pivot = array[high];
+    int i = low - 1;
+    int j;
+    for (j = low; j < high; ++j)
+	 {
+        if (array[j] <= pivot)
+		 {
+            ++i;
+            int temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+    int temp = array[i + 1];
+    array[i + 1] = array[high];
+    array[high] = temp;
+    return i + 1;
+}
+int quickSelect(int array[], int low, int high, int k) 
+{
+    if (k > 0 && k <= high - low + 1) 
+	{
+        int pivot = partition(array, low, high);
+        if (pivot - low == k - 1) 
+		{
+            return array[pivot];
+        } 
+		else if (pivot - low > k - 1) 
+		{
+            return quickSelect(array, low, pivot - 1, k);
+        } 
+		else 
+		{
+            return quickSelect(array, pivot + 1, high, k - pivot + low - 1);
+        }
+    }
+    return -1;
+}
+int readCSV(const char *filename, int array[], int *n, int *k)
+ {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) 
+	{
+        printf("Error: Unable to open file.\n");
+        return 0;
+    }
+    int i = 0;
+    char line[1024];
+    while (fgets(line, 1024, file))
+	 {
+        char *token = strtok(line, ",");
+        while (token != NULL)
+		 {
+            array[i++] = atoi(token);
+            token = strtok(NULL, ",");
+        }
+        *k = atoi(line);
+    }
+    fclose(file);
+    *n = i - 1;
+    return 1;
+}
+int main() {
+    char filename[100];
+    printf("Enter the name of the CSV file: ");
+    scanf("%s", filename);
+    int array[1000]; 
+    int n, k;
+    if (!readCSV(filename, array, &n, &k)) 
+	{
+        return 1;
+    }
+    int result = quickSelect(array, 0, n - 1, k);
+    if (result != -1)
+	 {
+	 	if(k==1)
+		 {
+		 	printf("The value of k is : %d\n",k);
+	 		printf("The %dst smallest element is: %d\n", k, result);
+		 }
+		 else if(k==2)
+		 {
+		 	printf("The value of k is : %d\n",k);
+		 	printf("The %dnd smallest element is: %d\n", k, result);
+		 }
+		 else if(k==3)
+		 {
+		 	printf("The value of k is : %d\n",k);
+		 	printf("The %drd smallest element is: %d\n", k, result);
+		 }
+		 else
+		 {
+		 	printf("The value of k is : %d\n",k);
+      printf("The %dth smallest element is: %d\n", k, result);
+    }
+    } 
+	else
+	 {
+	 	printf("The value of k is : %d\n",k);
+        printf("Invalid Input. Please enter a valid K value.\n");
+    }
+    return 0;
+}

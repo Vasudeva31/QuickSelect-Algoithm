@@ -1,0 +1,110 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <string>
+#include <cstdlib> 
+using namespace std;
+int partition(vector<int>& array, int low, int high)
+ {
+    int pivot = array[high]; 
+    int i = low - 1; 
+    for (int j = low; j <= high - 1; j++) 
+	{
+        if (array[j] <= pivot)
+		 {
+            i++; 
+            swap(array[i], array[j]);
+        }
+    }
+    swap(array[i + 1], array[high]);
+    return i + 1;
+}
+int quick_select(vector<int>& array, int low, int high, int k)
+ {
+    if (k > 0 && k <= high - low + 1) 
+	{
+        int pos = partition(array, low, high);
+        if (pos - low == k - 1)
+            return array[pos];
+        if (pos - low > k - 1)
+            return quick_select(array, low, pos - 1, k);
+        return quick_select(array, pos + 1, high, k - pos + low - 1);
+    }
+    return -1; 
+}
+bool readCSV(const string& filename, vector<int>& array, int& k) 
+{
+    ifstream file(filename.c_str());
+    if (!file.is_open())
+	 {
+        cerr << "Error: Unable to open CSV file." << endl;
+        return false;
+    }
+    string line;
+    if (getline(file, line))
+	 {
+        stringstream ss(line);
+        string value;
+        while (getline(ss, value, ',')) 
+		{
+            array.push_back(atoi(value.c_str())); 
+        }
+        if (getline(file, line))
+		 {
+            k = atoi(line.c_str());
+            file.close();
+            return true;
+        } 
+		else 
+		{
+            cerr << "Error: Invalid format in CSV file." << endl;
+        }
+    } 
+	else
+	 {
+        cerr << "Error: No data found in CSV file." << endl;
+    }
+    file.close();
+    return false;
+}
+int main() {
+    string filename;
+    cout << "Enter the name of the CSV file: ";
+    cin >> filename;
+    vector<int> array;
+    int k;
+    if (readCSV(filename, array, k)) 
+	{
+        int result = quick_select(array, 0, array.size() - 1, k);
+        if (result != -1)
+		{
+        	if(k==1)
+			{
+				cout<<"The value of k is : "<<k<<endl;
+        		cout<<"The "<<k<<"st smallest element is "<<result<<endl;
+			}
+			else if(k==2)
+			{
+				cout<<"The value of k is : "<<k<<endl;
+				cout<<"The "<<k<<"nd smallest element is "<<result<<endl;
+			}
+			else if(k==3)
+			{
+				cout<<"The value of k is : "<<k<<endl;
+				cout<<"The "<<k<<"rd smallest element is "<<result<<endl;
+			}
+			else
+			{
+			cout<<"The value of k is : "<<k<<endl;
+            cout<<"The "<<k<<"th smallest element is "<<result<<endl;
+        }
+        }
+        else
+		{
+			cout<<"The value of k is : "<<k<<endl;
+            cout<<"Invalid Input.Please enter a valid value for K."<<endl;
+        }
+    }
+    return 0;
+}
